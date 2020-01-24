@@ -3,7 +3,9 @@
 # NOTE - this makefile may differ from how Eclipse does its build!
 # This also assumes compilation on the target, with librobotcontrol pre-installed.
 
-TARGET = main
+# What the heck is this syntax? Why are spaces and tabs distinct?
+# SCons, CMake, and the line would be a more elegant tool for a more civilized age.
+# But alas, make and its perculiar language lives on by the power of inertia, despite its extreme user unfriendliness.
 
 # compiler and linker binaries
 CC		:= gcc
@@ -16,10 +18,14 @@ CFLAGS		:= -g -c -Wall
 LDFLAGS		:= -pthread -lm -lrt -l:librobotcontrol.so
 
 INCLUDES	:= $(wildcard src/*.h)
-C_SOURCES		:= $(wildcard src/*.c)
-CXX_SOURCES		:= $(wildcard src/*.cpp)
-C_OBJECTS		:= $(C_SOURCES:$%.c=$%.o)
-CXX_OBJECTS		:= $(CXX_SOURCES:$%.cpp=$%.o)
+SRC_DIR   := src/
+BUILD_DIR := build/
+TARGET_NAME = main
+TARGET = $(BUILD_DIR)/$(TARGET_NAME)
+C_SOURCES		:= $(wildcard $(SRC_DIR)/*.c)
+CXX_SOURCES		:= $(wildcard $(SRC_DIR)/*.cpp)
+C_OBJECTS		:= $(subst $(SRC_DIR)/, $(BUILD_DIR)/, $(C_SOURCES:$%.c=$%.o))
+CXX_OBJECTS		:= $(subst $(SRC_DIR)/, $(BUILD_DIR)/, $(CXX_SOURCES:$%.cpp=$%.o))
 
 prefix		:= /usr/local
 RM		:= rm -f
@@ -38,11 +44,13 @@ $(TARGET): $(C_OBJECTS) $(CXX_OBJECTS)
 
 
 # compiling command
-$(C_OBJECTS): %.o : %.c $(INCLUDES)
+$(C_OBJECTS): $(BUILD_DIR)/%.o : $(SRC_DIR)/%.c $(INCLUDES)
+	mkdir -p $(BUILD_DIR)
 	@$(CC) $(CFLAGS) $(WFLAGS) $(DEBUGFLAG) $< -o $@
 	@echo "Compiled: $@"
 
-$(CXX_OBJECTS): %.o : %.cpp $(INCLUDES)
+$(CXX_OBJECTS): $(BUILD_DIR)/%.o : $(SRC_DIR)/%.cpp $(INCLUDES)
+	mkdir -p $(BUILD_DIR)
 	@$(CC) $(CFLAGS) $(WFLAGS) $(DEBUGFLAG) $< -o $@
 	@echo "Compiled: $@"
 
@@ -71,5 +79,5 @@ uninstall:
 
 runonboot:
 	@$(MAKE) install --no-print-directory
-	@$(SYMLINK) $(DESTDIR)$(prefix)/bin/$(TARGET) $(SYMLINKDIR)/$(SYMLINKNAME)
+	@$(SYMLINK) $(DESTDIR)$(prefix)/bin/$(TARGET_NAME) $(SYMLINKDIR)/$(SYMLINKNAME)
 	@echo "$(TARGET) Set to Run on Boot"
