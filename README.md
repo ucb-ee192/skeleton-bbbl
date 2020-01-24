@@ -18,7 +18,7 @@ Otherwise, compiled binaries are in the `Debug/` folder.
 
 You can symlink `/etc/robotcontrol/link_to_startup_program` to your binary to run your program on boot.
 
-### make on target IDE
+### make on target device
 You can run make in the repository root. All `.c` and `.cpp` files in `src/` will be automatically detected for compilation, and create a binary called `build/main`. 
 
 The make target `runonboot` is provided to run the compiled target on the BeagleBoneBlue's boot.
