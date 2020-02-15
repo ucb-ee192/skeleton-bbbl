@@ -1,6 +1,6 @@
 # skeleton-bbbl
 
-## Building
+## Building main code
 This repository is set up to build under either Eclipse IDE with cross-compilation, or make on the target device.
 
 Important: both are distinct build flows, and likely will not produce equivalent binaries because of possible differences in compiler versions and flags. We recommend you standardize and stick to one.
@@ -22,3 +22,7 @@ You can symlink `/etc/robotcontrol/link_to_startup_program` to your binary to ru
 You can run make in the repository root. All `.c` and `.cpp` files in `src/` will be automatically detected for compilation, and create a binary called `build/main`. 
 
 The make target `runonboot` is provided to run the compiled target on the BeagleBoneBlue's boot.
+
+## Building PRU code
+See [the pru_firmware readme](pru_firmware/README.md).
+You will need to build the PRU firmware to use the PruCamera library.
