@@ -11,8 +11,8 @@
 
 
 // Shared memory definitions
-#define ENCODER_MEM_OFFSET  16
-#define CAM_MEM_OFFSET  (ENCODER_MEM_OFFSET + 1)
+#define ENCODER_MEM_OFFSET  16  // shared memory offset originally used by tne encoder - which this code replaces
+#define CAM_MEM_OFFSET  (ENCODER_MEM_OFFSET + 1)  // don't use the memory location used by the encoder
 #define PRU_SHAREDMEM ((volatile unsigned int *)(0x10000)) // shared memory with Cortex A8 (Linux)
 
 
@@ -87,6 +87,7 @@ int main() {
 // Initializes the ADC in "fast" mode
 // Based on the old PRU code at https://github.com/ucb-ee192/SkeletonBeagle/blob/master/pru_firmware/src/main_pru0.c
 void adc_init() {
+  // Make sure the ADC's (and its clocks) are enabled.
   while (CM_WKUP.ADC_TSC_CLKCTR_bit.MODULEMODE != 0x02) {
     CM_WKUP.CLKSTCTRL_bit.CLKTRCTRL = 0;
     CM_WKUP.ADC_TSC_CLKCTR_bit.MODULEMODE = 0x02;
@@ -139,7 +140,7 @@ void adc_init() {
 
 // Reads the ADC, returning the raw 12b value
 uint16_t adc_read() {
-  while (ADC_TSC.FIFO0COUNT) {
+  while (ADC_TSC.FIFO0COUNT) {  // if there's any pending data in the queue, discard it
     (void)ADC_TSC.FIFO0DATA;  // perform a dummy read
   }
   

@@ -27,7 +27,8 @@ int main() {
 
   uint32_t i = 0;
   while (1) {
-    char buf[128];  // buffer to hold bytes read
+    // Process nonblocking console IO
+    char buf[128];  // buffer to hold bytes read from console
     int numRead = read(0, buf, 128);  // returns number of bytes read, up to 128
     while (numRead > 0 && (buf[numRead - 1] == '\n' || buf[numRead - 1] == '\r')) {
       numRead--;  // strip trailing newline characters
@@ -36,11 +37,14 @@ int main() {
       buf[numRead] = '\0';  // read() doesn't attach a null terminator, which makes strcmp and print happier
       if (strcmp(buf, "quit") == 0) {
         break;  // break out of the main loop, so the cleanup code can run
-      } else {
+      } else {  // you might add more commands here
         printf("unknown command '%s'\n", buf);
       }
     }
     
+    //
+    // YOUR MAIN LOOP CODE HERE
+    //
     
     // This simple code sets the LED equal to the state of the Pause (PAU) button.
     // Note that rc_button_get_state returns 1 when pressed.
