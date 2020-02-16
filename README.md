@@ -22,3 +22,25 @@ You can symlink `/etc/robotcontrol/link_to_startup_program` to your binary to ru
 You can run make in the repository root. All `.c` and `.cpp` files in `src/` will be automatically detected for compilation, and create a binary called `build/main`. 
 
 The make target `runonboot` is provided to run the compiled target on the BeagleBoneBlue's boot.
+
+
+## Updating from skeleton-bbbl
+This repository may be updated once in a while.
+There are two ways to pull these into your team repository:
+
+### git pull
+On the command line, add the `skeleton-bbbl` repository as a remote (this only needs to be done once per cloned repository / local copy):
+```
+git remote add skeleton https://github.com/ucb-ee192/skeleton-bbbl.git
+```
+
+To update from `skeleton-bbbl`, run:
+```
+git pull skeleton master
+```
+
+You may need to fix merge conflicts.
+
+### manual copy-paste
+On each release, we will post a summary of changed files.
+You can copy-paste these into your repository.
