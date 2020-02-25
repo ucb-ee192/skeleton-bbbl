@@ -17,13 +17,13 @@ WFLAGS		:= -Wall -Wextra -Werror=float-equal -Wuninitialized -Wunused-variable -
 CFLAGS		:= -g -c -Wall
 LDFLAGS		:= -pthread -lm -lrt -l:librobotcontrol.so
 
-INCLUDES	:= $(wildcard src/*.h)
+INCLUDES	:= $(wildcard src/*.h) $(wildcard src/telemetry/*.h)
 SRC_DIR   := src/
 BUILD_DIR := build/
 TARGET_NAME = main
 TARGET = $(BUILD_DIR)/$(TARGET_NAME)
-C_SOURCES		:= $(wildcard $(SRC_DIR)/*.c)
-CXX_SOURCES		:= $(wildcard $(SRC_DIR)/*.cpp)
+C_SOURCES		:= $(wildcard $(SRC_DIR)/*.c) $(wildcard $(SRC_DIR)/telemetry/*.c)
+CXX_SOURCES		:= $(wildcard $(SRC_DIR)/*.cpp) $(wildcard $(SRC_DIR)/telemetry/*.cpp)
 C_OBJECTS		:= $(subst $(SRC_DIR)/, $(BUILD_DIR)/, $(C_SOURCES:$%.c=$%.o))
 CXX_OBJECTS		:= $(subst $(SRC_DIR)/, $(BUILD_DIR)/, $(CXX_SOURCES:$%.cpp=$%.o))
 
@@ -51,6 +51,7 @@ $(C_OBJECTS): $(BUILD_DIR)/%.o : $(SRC_DIR)/%.c $(INCLUDES)
 
 $(CXX_OBJECTS): $(BUILD_DIR)/%.o : $(SRC_DIR)/%.cpp $(INCLUDES)
 	mkdir -p $(BUILD_DIR)
+	mkdir -p $(BUILD_DIR)/telemetry
 	@$(CC) $(CFLAGS) $(WFLAGS) $(DEBUGFLAG) $< -o $@
 	@echo "Compiled: $@"
 

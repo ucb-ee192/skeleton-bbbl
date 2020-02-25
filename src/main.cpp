@@ -29,7 +29,7 @@ int main() {
   telemetry::Numeric<uint32_t> tTimeMs(telemetryObj, "time", "Time", "ms", 0);
   telemetry::Numeric<uint8_t> tBtnPause(telemetryObj, "btn_pause", "Pause Button", "raw", 0);
   telemetry::Numeric<uint8_t> tBtnMode(telemetryObj, "btn_mode", "Mode Button", "raw", 0);
-  telemetry::Numeric<uint8_t> tLedGreen(telemetryObj, "led_green", "Green LED", "raw", 0);
+  telemetry::Numeric<uint32_t> tLedBlinkDelay(telemetryObj, "led_blink_delay", "LED Blink Delay", "ms", 500);
 
   // A quick printf as a sanity check
   // Note, the \n is necessary since the buffer flushes on a line break
@@ -69,15 +69,13 @@ int main() {
     }
     telemetryObj.do_io();
     
-    rc_led_set(RC_LED_GREEN, tLedGreen);
-
-    // This simple code blinks the red LED at 1Hz.
-    rc_led_set(RC_LED_RED, 1);
-    rc_usleep(500*1000);
-    rc_led_set(RC_LED_RED, 0);
+    // This simple code blinks the green LED at a user-defined rate.
+    rc_led_set(RC_LED_GREEN, 1);
+    rc_usleep(tLedBlinkDelay*1000);
+    rc_led_set(RC_LED_GREEN, 0);
 
     printf("Iteration %i\n", i);
-    rc_usleep(500*1000);  // Limit console spam
+    rc_usleep(tLedBlinkDelay*1000);  // Limit console spam
     i++;
   }
 

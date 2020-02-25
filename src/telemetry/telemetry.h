@@ -26,26 +26,11 @@ const size_t MAX_RECEIVE_PACKET_LENGTH = 255;
 const size_t SERIAL_RX_BUFFER_SIZE = TELEMETRY_SERIAL_RX_BUFFER_SIZE;
 }
 
-#ifdef ARDUINO
-  #ifdef TELEMETRY_HAL
-    #error "Multiple telemetry HALs defined"
-  #endif
-  #include "telemetry-arduino-hal.h"
-#endif
 
-#if defined(__MBED__)
-  #ifdef TELEMETRY_HAL
-    #error "Multiple telemetry HALs defined"
-  #endif
-  #include "telemetry-mbed-hal.h"
+#ifdef TELEMETRY_HAL
+  #error "Multiple telemetry HALs defined"
 #endif
-
-#if defined(TELEMETRY_USE_SOCKETS)
-  #ifdef TELEMETRY_HAL
-    #error "Multiple telemetry HALs defined"
-  #endif
-  #include "telemetry-sockets-hal.h"
-#endif
+#include "telemetry-sockets-hal.h"
 
 
 #ifndef TELEMETRY_HAL
