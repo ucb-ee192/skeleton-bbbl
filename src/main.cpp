@@ -71,8 +71,7 @@ int main() {
     
     rc_led_set(RC_LED_GREEN, tLedGreen);
 
-    // This simple code sets the LED equal to the state of the Pause (PAU) button.
-    // Note that rc_button_get_state returns 1 when pressed.
+    // This simple code blinks the red LED at 1Hz.
     rc_led_set(RC_LED_RED, 1);
     rc_usleep(500*1000);
     rc_led_set(RC_LED_RED, 0);
