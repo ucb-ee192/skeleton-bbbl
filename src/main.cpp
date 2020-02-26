@@ -9,12 +9,27 @@
 #include <unistd.h>
 
 
+#include "telemetry/telemetry.h"
+
+
 int main() {
   fcntl(0, F_SETFL, fcntl(0, F_GETFL) | O_NONBLOCK);  // set stdin (file descriptor 0) to nonblocking mode
 
-  // Initialize the Pause (PAU) button
+  // Initialize the Pause (PAU) and mode (MOD) buttons
   rc_button_init(RC_BTN_PIN_PAUSE, RC_BTN_POLARITY_NORM_HIGH,
       RC_BTN_DEBOUNCE_DEFAULT_US);
+  rc_button_init(RC_BTN_PIN_MODE, RC_BTN_POLARITY_NORM_HIGH,
+      RC_BTN_DEBOUNCE_DEFAULT_US);
+
+  // Create teleemtry object and open listen socket
+  telemetry::SocketsHal telemetrySocket;
+  telemetrySocket.init();
+  telemetry::Telemetry telemetryObj(telemetrySocket);
+
+  telemetry::Numeric<uint32_t> tTimeMs(telemetryObj, "time", "Time", "ms", 0);
+  telemetry::Numeric<uint8_t> tBtnPause(telemetryObj, "btn_pause", "Pause Button", "raw", 0);
+  telemetry::Numeric<uint8_t> tBtnMode(telemetryObj, "btn_mode", "Mode Button", "raw", 0);
+  telemetry::Numeric<uint32_t> tLedBlinkDelay(telemetryObj, "led_blink_delay", "LED Blink Delay", "ms", 500);
 
   // A quick printf as a sanity check
   // Note, the \n is necessary since the buffer flushes on a line break
@@ -45,18 +60,26 @@ int main() {
     //
     // YOUR MAIN LOOP CODE HERE
     //
+    tTimeMs = (uint32_t)(rc_nanos_since_boot() / 1000 / 1000);
+    tBtnPause = rc_button_get_state(RC_BTN_PIN_PAUSE);
+    tBtnMode = rc_button_get_state(RC_BTN_PIN_MODE);
+
+    if (telemetrySocket.check_connect()) {
+      telemetryObj.transmit_header();
+    }
+    telemetryObj.do_io();
     
-    // This simple code sets the LED equal to the state of the Pause (PAU) button.
-    // Note that rc_button_get_state returns 1 when pressed.
-    rc_led_set(RC_LED_RED, 1);
-    rc_usleep(500*1000);
-    rc_led_set(RC_LED_RED, 0);
+    // This simple code blinks the green LED at a user-defined rate.
+    rc_led_set(RC_LED_GREEN, 1);
+    rc_usleep(tLedBlinkDelay*1000);
+    rc_led_set(RC_LED_GREEN, 0);
 
     printf("Iteration %i\n", i);
-    rc_usleep(500*1000);  // Limit console spam
+    rc_usleep(tLedBlinkDelay*1000);  // Limit console spam
     i++;
   }
 
+  telemetrySocket.cleanup();
   rc_led_cleanup();
   rc_button_cleanup();
 
